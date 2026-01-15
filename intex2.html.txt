@@ -1,0 +1,66 @@
+/* ---------- CSS VARIABLES (THEME) ---------- */
+:root{
+  --bg:#ffffff;
+  --text:#222222;
+  --card:#f6f8fa;
+  --accent:#0066ff;
+  --accent-dark:#0047b3;
+  --shadow:0 2px 6px rgba(0,0,0,.08);
+}
+body.dark{
+  --bg:#121212;
+  --text:#e1e1e1;
+  --card:#1e1e1e;
+  --accent:#4d94ff;
+  --accent-dark:#266cd9;
+}
+
+/* ---------- RESET ---------- */
+*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,Arial,sans-serif;}
+body{background:var(--bg);color:var(--text);line-height:1.5;transition:background .3s,color .3s;}
+img{max-width:100%;display:block;}
+button{cursor:pointer;border:none;background:var(--accent);color:#fff;padding:.55rem 1rem;border-radius:4px;transition:background .2s;}
+button:hover{background:var(--accent-dark);}
+a{color:var(--accent);text-decoration:none;}
+
+/* ---------- HEADER ---------- */
+.top-bar{position:sticky;top:0;z-index:10;background:var(--bg);box-shadow:var(--shadow);padding:.75rem 1rem;}
+.logo{font-weight:800;font-size:1.4rem;color:var(--accent);}
+.nav-row{display:flex;align-items:center;gap:.75rem;margin-top:.5rem;}
+#search{flex:1;padding:.55rem 1rem;border:1px solid #ccc;border-radius:4px;}
+.nav-buttons{display:flex;gap:.5rem;align-items:center;}
+#cartCount,#wishCount{font-size:.7rem;position:relative;top:-3px;margin-left:2px;background:crimson;color:#fff;border-radius:50%;padding:2px 5px;}
+
+/* ---------- FILTERS ---------- */
+.filters{display:flex;gap:.5rem;padding:.75rem 1rem;}
+.filter-btn{background:#ddd;color:#111;}
+.filter-btn.active{background:var(--accent);color:#fff;}
+
+/* ---------- PRODUCT GRID ---------- */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:1rem;padding:1rem;}
+.card{background:var(--card);border-radius:6px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;}
+.card img{height:140px;object-fit:cover;}
+.card-body{padding:.75rem;flex:1;display:flex;flex-direction:column;justify-content:space-between;}
+.card-title{font-weight:600;margin-bottom:.25rem;font-size:.95rem;}
+.card-price{color:var(--accent);margin-bottom:.5rem;font-weight:700;}
+.card-actions{display:flex;gap:.5rem;}
+.card-actions button{font-size:.8rem;padding:.4rem;}
+
+/* ---------- FOOTER ---------- */
+footer{text-align:center;padding:2rem 1rem;font-size:.85rem;color:#777;}
+
+/* ---------- MODAL ---------- */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:20;}
+.modal{background:var(--card);padding:1.5rem;border-radius:8px;width:90%;max-width:400px;position:relative;}
+.modal h2{margin-bottom:1rem;}
+.modal input,.modal select,.modal textarea{width:100%;margin-bottom:.75rem;padding:.55rem;border:1px solid #ccc;border-radius:4px;}
+.closeModal{position:absolute;top:.75rem;right:.75rem;background:none;color:var(--text);font-size:1.2rem;}
+.hidden{display:none;}
+
+/* ---------- FLOATING SELL BUTTON ---------- */
+.fab{position:fixed;bottom:1.5rem;right:1.5rem;width:56px;height:56px;border-radius:50%;font-size:1.8rem;box-shadow:var(--shadow);}
+
+/* ---------- RESPONSIVE ---------- */
+@media(min-width:600px){
+  .product-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
+}

@@ -1,0 +1,200 @@
+/* ---------- MOCK DATA ---------- */
+let products = [
+  {id:1,title:"iPhone 15",price:220000,cat:"electronics",img:"https://picsum.photos/400/300?random=1",desc:"Brand-new sealed unit."},
+  {id:2,title:"Denim Jacket",price:6500,cat:"fashion",img:"https://picsum.photos/400/300?random=2",desc:"Vintage look, size M."},
+  {id:3,title:"Air Fryer",price:12500,cat:"home",img:"https://picsum.photos/400/300?random=3",desc:"3.5 L capacity."},
+  {id:4,title:"RC Car",price:8900,cat:"toys",img:"https://picsum.photos/400/300?random=4",desc:"1:16 scale, rechargeable."},
+  {id:5,title:"Bluetooth Speaker",price:4900,cat:"electronics",img:"https://picsum.photos/400/300?random=5",desc:"20 W, waterproof."},
+  {id:6,title:"Sneakers",price:9200,cat:"fashion",img:"https://picsum.photos/400/300?random=6",desc:"Unisex, white, EU 42."}
+];
+
+/* ---------- STATE ---------- */
+let cart = JSON.parse(localStorage.getItem('hubCart'))||[];
+let wish = JSON.parse(localStorage.getItem('hubWish'))||[];
+let user = localStorage.getItem('hubUser');
+
+/* ---------- ON LOAD ---------- */
+window.addEventListener('DOMContentLoaded',()=>{
+  renderProducts(products);
+  updateCount('cartCount',cart);
+  updateCount('wishCount',wish);
+  if(user) document.getElementById('loginBtn').textContent='Logout';
+  document.getElementById('year').textContent=new Date().getFullYear();
+});
+
+/* ---------- RENDER ---------- */
+function renderProducts(list){
+  const grid=document.getElementById('products');
+  grid.innerHTML='';
+  list.forEach(p=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`
+      <img src="${p.img}" alt="${p.title}">
+      <div class="card-body">
+        <div>
+          <div class="card-title">${p.title}</div>
+          <div class="card-price">LKR ${p.price.toLocaleString()}</div>
+        </div>
+        <div class="card-actions">
+          <button onclick="addToCart(${p.id})">Buy</button>
+          <button onclick="toggleWish(${p.id})">${wish.includes(p.id)?'❤️':'🤍'}</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+/* ---------- CART ---------- */
+function addToCart(id){
+  if(!user){openModal('loginModal');return;}
+  if(cart.find(x=>x.id===id)) return;
+  const item=products.find(p=>p.id===id);
+  cart.push(item);
+  localStorage.setItem('hubCart',JSON.stringify(cart));
+  updateCount('cartCount',cart);
+}
+function removeFromCart(id){
+  cart=cart.filter(x=>x.id!==id);
+  localStorage.setItem('hubCart',JSON.stringify(cart));
+  updateCount('cartCount',cart);
+  renderCart();
+}
+function renderCart(){
+  const list=document.getElementById('cartList');
+  list.innerHTML='';
+  let total=0;
+  cart.forEach(item=>{
+    total+=item.price;
+    const li=document.createElement('li');
+    li.style.marginBottom='.5rem';
+    li.innerHTML=`${item.title} – LKR ${item.price.toLocaleString()}
+                  <button onclick="removeFromCart(${item.id})" style="margin-left:.5rem;">Remove</button>`;
+    list.appendChild(li);
+  });
+  document.getElementById('cartTotal').innerHTML=`<strong>Total: LKR ${total.toLocaleString()}</strong>`;
+}
+
+/* ---------- WISHLIST ---------- */
+function toggleWish(id){
+  if(!user){openModal('loginModal');return;}
+  const idx=wish.indexOf(id);
+  if(idx>-1) wish.splice(idx,1); else wish.push(id);
+  localStorage.setItem('hubWish',JSON.stringify(wish));
+  renderProducts(products); // refresh heart icon
+  updateCount('wishCount',wish);
+}
+function renderWish(){
+  const list=document.getElementById('wishList');
+  list.innerHTML='';
+  wish.map(id=>products.find(p=>p.id===id)).forEach(item=>{
+    const li=document.createElement('li');
+    li.style.marginBottom='.5rem';
+    li.innerHTML=`${item.title} – LKR ${item.price.toLocaleString()}
+                  <button onclick="toggleWish(${item.id})" style="margin-left:.5rem;">Remove</button>`;
+    list.appendChild(li);
+  });
+}
+
+/* ---------- SEARCH + FILTER ---------- */
+document.getElementById('search').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase();
+  applyFilterAndSearch(q,getActiveCat());
+});
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',e=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+    e.target.classList.add('active');
+    applyFilterAndSearch(document.getElementById('search').value.toLowerCase(),getActiveCat());
+  });
+});
+function getActiveCat(){
+  return document.querySelector('.filter-btn.active').dataset.cat;
+}
+function applyFilterAndSearch(q,cat){
+  let filtered=products;
+  if(cat!=='all') filtered=filtered.filter(p=>p.cat===cat);
+  if(q) filtered=filtered.filter(p=>p.title.toLowerCase().includes(q));
+  renderProducts(filtered);
+}
+
+/* ---------- AUTH ---------- */
+document.getElementById('authForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const email=e.target[0].value;
+  localStorage.setItem('hubUser',email);
+  user=email;
+  document.getElementById('loginBtn').textContent='Logout';
+  closeModal();
+});
+document.getElementById('loginBtn').addEventListener('click',()=>{
+  if(user){ // logout
+    localStorage.removeItem('hubUser');
+    user=null;
+    document.getElementById('loginBtn').textContent='Login';
+    cart=[];wish=[];
+    localStorage.removeItem('hubCart');
+    localStorage.removeItem('hubWish');
+    updateCount('cartCount',cart);
+    updateCount('wishCount',wish);
+    renderProducts(products);
+  }else openModal('loginModal');
+});
+
+/* ---------- ADD PRODUCT (SELLER) ---------- */
+document.getElementById('sellFab').addEventListener('click',()=>{
+  if(!user){openModal('loginModal');return;}
+  openModal('addProductModal');
+});
+document.getElementById('addProductForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const f=e.target;
+  const newItem={
+    id:Date.now(),
+    title:f.title.value,
+    price:Number(f.price.value),
+    cat:f.category.value,
+    img:f.image.value,
+    desc:f.desc.value
+  };
+  products.unshift(newItem);
+  renderProducts(products);
+  f.reset();
+  closeModal();
+});
+
+/* ---------- DARK MODE ---------- */
+document.getElementById('darkToggle').addEventListener('click',()=>{
+  document.body.classList.toggle('dark');
+  localStorage.setItem('hubDark',document.body.classList.contains('dark'));
+});
+if(JSON.parse(localStorage.getItem('hubDark'))) {
+  document.body.classList.add('dark');
+  document.getElementById('darkToggle').textContent='☀️';
+}
+document.body.addEventListener('click',e=>{
+  if(e.target.id==='darkToggle') e.target.textContent=document.body.classList.contains('dark')?'☀️':'🌙';
+});
+
+/* ---------- MODAL HELPERS ---------- */
+function openModal(id){
+  document.getElementById('modalBackdrop').classList.remove('hidden');
+  document.getElementById(id).classList.remove('hidden');
+  if(id==='cartModal') renderCart();
+  if(id==='wishModal') renderWish();
+}
+function closeModal(){
+  document.getElementById('modalBackdrop').classList.add('hidden');
+  document.querySelectorAll('.modal').forEach(m=>m.classList.add('hidden'));
+}
+document.getElementById('cartBtn').addEventListener('click',()=>openModal('cartModal'));
+document.getElementById('wishBtn').addEventListener('click',()=>openModal('wishModal'));
+document.querySelectorAll('.closeModal').forEach(btn=>btn.addEventListener('click',closeModal));
+document.getElementById('modalBackdrop').addEventListener('click',e=>{
+  if(e.target.id==='modalBackdrop') closeModal();
+});
+
+/* ---------- UTIL ---------- */
+function updateCount(el,arr){
+  document.getElementById(el).textContent=arr.length||'';
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Hub LK – Buy & Sell</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- HEADER -->
+  <header class="top-bar">
+    <div class="logo">The Hub LK</div>
+
+    <nav class="nav-row">
+      <input type="text" id="search" placeholder="Search products…" autocomplete="off">
+      <div class="nav-buttons">
+        <button id="darkToggle" aria-label="Toggle dark mode">🌙</button>
+        <button id="cartBtn" aria-label="Open cart">🛒<span id="cartCount">0</span></button>
+        <button id="wishBtn" aria-label="Open wishlist">❤️<span id="wishCount">0</span></button>
+        <button id="loginBtn">Login</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- CATEGORY FILTER -->
+  <section class="filters">
+    <button class="filter-btn active" data-cat="all">All</button>
+    <button class="filter-btn" data-cat="electronics">Electronics</button>
+    <button class="filter-btn" data-cat="fashion">Fashion</button>
+    <button class="filter-btn" data-cat="home">Home</button>
+    <button class="filter-btn" data-cat="toys">Toys</button>
+  </section>
+
+  <!-- MAIN GRID -->
+  <main id="products" class="product-grid"></main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>Contact: support@thehub.lk | +94 77 123 4567</p>
+    <p>
+      <a href="#">Facebook</a> |
+      <a href="#">Instagram</a> |
+      <a href="#">Twitter</a>
+    </p>
+    <p>&copy; <span id="year"></span> The Hub LK. All rights reserved.</p>
+  </footer>
+
+  <!-- MODALS (login, cart, wishlist, add-product) -->
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <!-- Login / Sign-up -->
+    <div id="loginModal" class="modal hidden">
+      <h2>Login / Sign-up</h2>
+      <form id="authForm">
+        <input type="email" placeholder="Email" required>
+        <input type="password" placeholder="Password" required minlength="6">
+        <button type="submit">Go</button>
+      </form>
+      <button class="closeModal">✖</button>
+    </div>
+
+    <!-- Cart -->
+    <div id="cartModal" class="modal hidden">
+      <h2>Your Cart</h2>
+      <ul id="cartList"></ul>
+      <p id="cartTotal"><strong>Total: LKR 0</strong></p>
+      <button class="closeModal">Close</button>
+    </div>
+
+    <!-- Wishlist -->
+    <div id="wishModal" class="modal hidden">
+      <h2>Wishlist</h2>
+      <ul id="wishList"></ul>
+      <button class="closeModal">Close</button>
+    </div>
+
+    <!-- Add Product (seller) -->
+    <div id="addProductModal" class="modal hidden">
+      <h2>Sell an Item</h2>
+      <form id="addProductForm">
+        <input name="title" placeholder="Product title" required>
+        <input name="price" type="number" min="1" placeholder="Price (LKR)" required>
+        <input name="image" type="url" placeholder="Image URL" required>
+        <select name="category" required>
+          <option value="">Pick category</option>
+          <option>electronics</option><option>fashion</option><option>home</option><option>toys</option>
+        </select>
+        <textarea name="desc" placeholder="Short description" rows="3" required></textarea>
+        <button type="submit">Post Product</button>
+      </form>
+      <button class="closeModal">✖</button>
+    </div>
+  </div>
+
+  <!-- FLOATING SELL BUTTON -->
+  <button id="sellFab" class="fab">+ Sell</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
